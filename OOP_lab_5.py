@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 class User:
     def __init__(self, name, login, password, database_main):
         self.__name = name
@@ -35,8 +36,24 @@ class User:
     def set_autorization(self, state):
         self.__autorisatiion = state
 
+class IUserManager():
+    @abstractmethod
+    def login(self):
+        pass
 
-class IUserManager(User):
+    @abstractmethod
+    def sing_in(self):
+        pass
+
+    @abstractmethod
+    def sign_out(self):
+        pass
+
+    @abstractmethod
+    def autorization(self):
+        pass
+
+class UserManager(User,IUserManager):
     def login(self):
         if self.get_dbname().search_equals_login(self.getlogin()):
             print("A user with this username already exists")
@@ -55,9 +72,28 @@ class IUserManager(User):
         print("Remember me? ('Yes' or 'No')")
         if Cheker():
             self.set_autorization(True)
-
-
 class IUser_Repositiry():
+    @abstractmethod
+    def get_database_users(self):
+        pass
+
+    @abstractmethod
+    def add_on_database(self,user):
+        pass
+
+    @abstractmethod
+    def search_equals_login(self, login):
+        pass
+
+    @abstractmethod
+    def search_user(self, login, password):
+        pass
+
+    @abstractmethod
+    def get_by_login(self, login):
+        pass
+
+class User_Repositiry(IUser_Repositiry):
     def __init__(self):
         self.__dbnameUsers = []
 
@@ -102,12 +138,9 @@ def Cheker():
             print('Error')
             return False
 
-
-
-
-if __name__ == '__main__':
-    database_main = IUser_Repositiry()
-    testuser = IUserManager("Nikita", "afterkita", "qwerty", database_main)
+def Main_Cycle():
+    database_main = User_Repositiry()
+    testuser = UserManager("Nikita", "afterkita", "qwerty", database_main)
     testuser.set_autorization(True)
     database_main.add_on_database(testuser)
 
@@ -127,14 +160,16 @@ if __name__ == '__main__':
             step = int(input('Admin panel:\n1 - Withdraw all users\n2 - Find a user by login\n3 - exit\n'))
             if step == 1:
                 for i in range(len(database_main.get_database_users())):
-                    print(f"{i+1}")
-                    print(f" username - {database_main.get_database_users()[i].get_name()} \n login - {database_main.get_database_users()[i].getlogin()}\n password - {database_main.get_database_users()[i].get_password()} \n auth - {database_main.get_database_users()[i].getautorization()} \n state - {database_main.get_database_users()[i].getState()} \n ")
+                    print(f"{i + 1}")
+                    print(
+                        f" username - {database_main.get_database_users()[i].get_name()} \n login - {database_main.get_database_users()[i].getlogin()}\n password - {database_main.get_database_users()[i].get_password()} \n auth - {database_main.get_database_users()[i].getautorization()} \n state - {database_main.get_database_users()[i].getState()} \n ")
 
             if step == 2:
                 login = str(input('Enter your username!'))
                 user1 = database_main.get_by_login(login)
                 if user1 is not None:
-                    print(f" username - {user1.get_name()}\n login - {user1.getlogin()}\n password - {user1.get_password()} \n auth - {user1.getautorization()} \n state - {user1.getState()}")
+                    print(
+                        f" username - {user1.get_name()}\n login - {user1.getlogin()}\n password - {user1.get_password()} \n auth - {user1.getautorization()} \n state - {user1.getState()}")
                 else:
                     print("There is no such user!")
             if step == 3:
@@ -145,7 +180,7 @@ if __name__ == '__main__':
                 name = str(input('Enter your Name!'))
                 login = str(input('Enter your Username!'))
                 password = str(input('Enter your password!'))
-                user = IUserManager(name, login, password, database_main)
+                user = UserManager(name, login, password, database_main)
                 state = user.login()
                 if state:
                     database_main.add_on_database(user)
@@ -183,3 +218,7 @@ if __name__ == '__main__':
                         print("Incorrectly entered username or password!")
             if step == 3:
                 UserFlag = False
+
+
+if __name__ == '__main__':
+    Main_Cycle()
