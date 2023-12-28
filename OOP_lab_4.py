@@ -1,7 +1,4 @@
 import time
-
-
-
 class Keyboard:
     def __init__(self, Keyboard_name):
         self.app = {'Ctrl+Alt+Delete': 'Запуск окна настроек.', 'CTRL+A': 'Выбор всех элементов в документе или окне.', 'Ctrl+~':'Открытие консоли'}
@@ -24,13 +21,16 @@ class Keyboard:
             self.active_app.append(self.app[str(press_name)])
         else:
             self.active_app.append(str(press_name)+' -без действия')
-
+    def delete_app(self,app):
+        #app - приложение, которое нужно закрыть
+        print('Закрытие: '+str(app))
     def undo_last_action(self):
         if len(self.actions) > 0:
             print('\nUndo last action:')
             last_action = self.actions.pop()
             print(f'Last press - {last_action}')
             last_active_app = self.active_app.pop()
+            self.delete_app(last_active_app)
             print(f'Last app - {last_active_app}')
 
         else:
